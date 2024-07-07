@@ -10,6 +10,10 @@ Pecunia means money in Latin.
 
 TypeScript (with Node.js) and Java are currently in this repo, but I might add more languages later.
 
+## Brief
+
+Here is [the task description](task.md) for the project.
+
 ## License
 
 Please see the [LICENSE file](LICENSE).
