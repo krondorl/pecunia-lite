@@ -6,7 +6,7 @@ services:
       - "27018:27017"
     container_name: nosql-db
     volumes:
-      - ./db-mongo/:/data/db
+      - ./db-mongo/:/docker-entrypoint-initdb.d/
   rabbitmq:
     image: rabbitmq:alpine
     container_name: rabbitmq
