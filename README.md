@@ -1,3 +1,5 @@
+<img src="docs/piggy-bank-icon.svg" width="122"/>
+
 # Pecunia Lite
 
 This is a microservices practice project. The program is capable of doing bank accounting.
