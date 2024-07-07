@@ -6,19 +6,33 @@ services:
       - "27018:27017"
     container_name: nosql-db
     volumes:
-      - ./db/:/data/db
-
+      - ./db-mongo/:/data/db
   rabbitmq:
     image: rabbitmq:alpine
     container_name: rabbitmq
     ports:
-      - '5672:5672'
-
-  products:
+      - "5672:5672"
+  reporting:
     build:
       dockerfile: Dockerfile
-      context: ./products
-    container_name: products
+      context: ./reporting
+    container_name: reporting
+    ports:
+      - "8001:8001"
+    restart: always
+    depends_on:
+      - "nosql-db"
+      - "rabbitmq"
+    volumes:
+      - .:/app/
+      - /app/reporting/node_modules
+    env_file:
+      - ./reporting/.env.dev
+  account:
+    build:
+      dockerfile: Dockerfile
+      context: ./account
+    container_name: account
     ports:
       - "8002:8002"
     restart: always
@@ -28,14 +42,13 @@ services:
     volumes:
       - .:/app
       - /app/products/node_modules
-
     env_file:
       - ./products/.env.dev
-  shopping:
+  notification:
     build:
       dockerfile: Dockerfile
-      context: ./shopping
-    container_name: shopping
+      context: ./notification
+    container_name: notification
     ports:
       - "8003:8003"
     restart: always
@@ -44,32 +57,33 @@ services:
       - "rabbitmq"
     volumes:
       - .:/app
-      - /app/shopping/node_modules
+      - /app/notification/node_modules
     env_file:
-      - ./shopping/.env.dev
-  customer:
+      - ./notification/.env.dev
+  transaction:
     build:
       dockerfile: Dockerfile
-      context: ./customer
-    container_name: customer
+      context: ./transaction
+    container_name: transaction
     ports:
-      - "8001:8001"
+      - "8004:8004"
     restart: always
     depends_on:
       - "nosql-db"
       - "rabbitmq"
     volumes:
-      - .:/app/
-      - /app/customer/node_modules
+      - .:/app
+      - /app/transaction/node_modules
     env_file:
-      - ./customer/.env.dev
+      - ./transaction/.env.dev
   nginx-proxy:
     build:
       dockerfile: Dockerfile
       context: ./proxy
     depends_on:
-      - products
-      - shopping
-      - customer
+      - account
+      - transaction
+      - notification
+      - reporting
     ports:
       - 80:80
